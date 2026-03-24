@@ -397,3 +397,62 @@ button:active {
   align-items: center;
   justify-content: center;
 }
+
+/* RWD for mobile screens to prevent stars from overlapping */
+@media (max-width: 768px) {
+  .palace {
+    min-height: 120px;
+    padding: 4px;
+  }
+  .stars-major-container {
+    gap: 2px;
+    top: 4px; 
+    left: 4px;
+  }
+  .stars-minor-container {
+    gap: 2px;
+    top: 4px; 
+    right: 4px;
+  }
+  .star.major {
+    font-size: 0.9rem;
+  }
+  .star.minor {
+    font-size: 0.75rem;
+  }
+  .star.bad {
+    font-size: 0.75rem;
+  }
+  .mutagen {
+    font-size: 0.65rem;
+    padding: 0 1px;
+    margin-top: 2px;
+  }
+  .palace-name-label {
+    font-size: 0.75rem;
+    padding: 2px 4px;
+    bottom: 4px; 
+    right: 4px;
+    letter-spacing: 0;
+  }
+  .branch-label {
+    font-size: 0.8rem;
+    bottom: 4px; 
+    left: 4px;
+  }
+  .center-box {
+    padding: 8px;
+  }
+  .center-box h2 {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    letter-spacing: 2px;
+  }
+  .center-info {
+    gap: 8px;
+  }
+  .center-info p {
+    font-size: 0.85rem;
+  }
+}
