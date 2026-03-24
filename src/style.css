@@ -130,7 +130,9 @@ button:active {
 
 .palace {
   background-color: #ffffff;
-  min-height: 180px;
+  min-height: 250px;
+  padding: 8px;
+  position: relative;
   padding: 8px;
   position: relative;
   /* 傳統命盤通常會有微微的背景紙紋或純白，此處用純白保持乾淨 */
@@ -223,21 +225,24 @@ button:active {
 .stars-major-container {
   display: flex;
   flex-direction: row-reverse; /* 主星通常從右到左排列（選用）或左到右皆可，此處維持預設置左上 */
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 8px;
   position: absolute;
   top: 8px;
   left: 8px;
+  max-width: 45%;
 }
 
 .stars-minor-container {
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 6px;
   position: absolute;
   top: 8px;
   right: 8px; /* 輔星靠右上排列 */
+  max-width: 50%;
 }
 
 .star {
@@ -461,7 +466,7 @@ button:active {
 /* RWD for mobile screens to prevent stars from overlapping */
 @media (max-width: 768px) {
   .palace {
-    min-height: 120px;
+    min-height: 160px;
     padding: 4px;
   }
   .stars-major-container {

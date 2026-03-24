@@ -350,19 +350,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const yOffset = e.clientY > window.innerHeight / 2 ? -tooltip.offsetHeight - 15 : 15;
             tooltip.style.left = (e.clientX + xOffset) + 'px';
             tooltip.style.top = (e.clientY + yOffset) + 'px';
-
-            // Draw opposing line
-            const oppDiv = chartGrid.querySelector(`.palace-${oppBranch}`);
-            if (oppDiv && svgContainer) {
-              const rect1 = palDiv.getBoundingClientRect();
-              const rect2 = oppDiv.getBoundingClientRect();
-              const svgRect = svgContainer.getBoundingClientRect();
-              const x1 = rect1.left + rect1.width/2 - svgRect.left;
-              const y1 = rect1.top + rect1.height/2 - svgRect.top;
-              const x2 = rect2.left + rect2.width/2 - svgRect.left;
-              const y2 = rect2.top + rect2.height/2 - svgRect.top;
-              svgContainer.innerHTML = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,5" opacity="0.6" pointer-events="none"></line>`;
-            }
           }
         });
         palDiv.addEventListener('mousemove', (e) => {
