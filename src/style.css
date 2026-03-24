@@ -1,0 +1,312 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@400;700&display=swap');
+
+:root {
+  --bg-color: #f8fafc; /* Very light slate for modern feel */
+  --panel-bg: #ffffff;
+  --text-main: #334155;
+  --text-muted: #64748b;
+  --border-color: #cbd5e1;
+  --primary-color: #0ea5e9; /* Modern light blue */
+  --primary-hover: #0284c7;
+  
+  /* Traditional Astrology Colors */
+  --star-major: #b91c1c; /* Crimson */
+  --star-minor: #0369a1; /* Deep Blue */
+  --star-bad: #7e22ce;   /* Purple */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 2.2rem;
+  color: #1e293b;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.form-section {
+  background: var(--panel-bg);
+  padding: 32px;
+  border-radius: 16px;
+  margin-bottom: 40px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 16px;
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: all 0.2s ease;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+}
+
+button {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 500;
+  width: 100%;
+  font-family: 'Noto Sans TC', sans-serif;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.2), 0 2px 4px -2px rgba(14, 165, 233, 0.1);
+}
+
+button:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px -1px rgba(14, 165, 233, 0.25), 0 4px 6px -2px rgba(14, 165, 233, 0.15);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Chart Grid */
+.chart-container {
+  display: none;
+  margin-top: 40px;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  background-color: #94a3b8; /* Border color for the grid lines */
+  border: 1px solid #94a3b8;
+  gap: 1px; /* Creates the border effect between cells */
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+}
+
+.palace {
+  background-color: #ffffff;
+  min-height: 180px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.palace-name-label {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: #ef4444; /* Clean red badge */
+  color: #ffffff;
+  padding: 2px 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+.branch-label {
+  position: absolute;
+  bottom: 8px;
+  left: 10px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-family: 'Noto Serif TC', serif;
+}
+
+.stars-container {
+  display: flex;
+  flex-direction: column; /* Stack stars vertically like classic charts */
+  flex-wrap: wrap;
+  max-height: 130px;
+  gap: 2px;
+  align-content: flex-start;
+  font-family: 'Noto Serif TC', serif; /* Traditional serif for stars */
+}
+
+.star {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-right: 6px;
+}
+.star.major { color: var(--star-major); }
+.star.minor { color: var(--star-minor); }
+.star.bad { color: var(--star-bad); }
+
+.center-box {
+  grid-area: 2 / 2 / 4 / 4;
+  background-color: #ffffff;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.center-box h2 {
+  font-size: 1.8rem;
+  color: #0f172a;
+  margin-bottom: 24px;
+  font-family: 'Noto Serif TC', serif;
+}
+
+.center-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.center-info p {
+  font-size: 1.1rem;
+  color: #334155;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+
+.center-info span {
+  font-weight: 500;
+  color: #0f172a;
+}
+
+/* Grid Positioning for 12 Earthly Branches */
+.palace-寅 { grid-area: 4 / 1 / 5 / 2; }
+.palace-卯 { grid-area: 3 / 1 / 4 / 2; }
+.palace-辰 { grid-area: 2 / 1 / 3 / 2; }
+.palace-巳 { grid-area: 1 / 1 / 2 / 2; }
+.palace-午 { grid-area: 1 / 2 / 2 / 3; }
+.palace-未 { grid-area: 1 / 3 / 2 / 4; }
+.palace-申 { grid-area: 1 / 4 / 2 / 5; }
+.palace-酉 { grid-area: 2 / 4 / 3 / 5; }
+.palace-戌 { grid-area: 3 / 4 / 4 / 5; }
+.palace-亥 { grid-area: 4 / 4 / 5 / 5; }
+.palace-子 { grid-area: 4 / 3 / 5 / 4; }
+.palace-丑 { grid-area: 4 / 2 / 5 / 3; }
+
+#status-message {
+  margin-top: 16px;
+  text-align: center;
+  font-weight: 500;
+  color: #059669; /* Emerald green */
+}
+
+/* Analysis Report Section */
+.analysis-section {
+  background: var(--panel-bg);
+  padding: 32px;
+  border-radius: 16px;
+  margin-top: 32px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  font-family: 'Noto Sans TC', sans-serif;
+}
+
+.analysis-section h2 {
+  font-size: 1.8rem;
+  color: #1e293b;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+  text-align: center;
+  font-family: 'Noto Serif TC', serif;
+}
+
+.analysis-block {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: #f8fafc;
+  border-left: 4px solid var(--primary-color);
+  border-radius: 0 8px 8px 0;
+}
+
+.analysis-block h3 {
+  font-size: 1.3rem;
+  color: #0f172a;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.evidence-badge {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.analysis-block p {
+  color: #334155;
+  line-height: 1.8;
+  font-size: 1.05rem;
+}
+
+/* Tooltip Styles */
+.palace-tooltip {
+  position: fixed;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+  width: 380px;
+  max-width: 90vw;
+  z-index: 9999;
+  display: none;
+  color: #334155;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.palace-tooltip h4 {
+  margin: 0 0 10px 0;
+  color: #0f172a;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 6px;
+}
