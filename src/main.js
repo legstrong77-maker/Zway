@@ -294,25 +294,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Tooltip Hover Logic
       const tooltip = document.getElementById('palace-tooltip');
+      let backdrop = document.getElementById('tooltip-backdrop');
+      if (tooltip && !backdrop) {
+        backdrop = document.createElement('div');
+        backdrop.id = 'tooltip-backdrop';
+        backdrop.className = 'tooltip-backdrop';
+        document.body.appendChild(backdrop);
+        
+        backdrop.addEventListener('click', () => {
+          tooltip.style.display = 'none';
+          backdrop.style.display = 'none';
+          tooltip.classList.remove('mobile-modal');
+        });
+      }
+
       if (tooltip) {
+        palDiv.addEventListener('click', (e) => {
+          if (window.innerWidth <= 768) {
+            tooltip.innerHTML = `<button id="close-tooltip-btn" class="close-tooltip-btn">✕</button><h4>${palace.name} (${palace.earthlyBranch}宮)</h4>` + getPalaceInfo(palace);
+            tooltip.querySelector('#close-tooltip-btn').addEventListener('click', () => {
+              tooltip.style.display = 'none';
+              backdrop.style.display = 'none';
+              tooltip.classList.remove('mobile-modal');
+            });
+            tooltip.classList.add('mobile-modal');
+            tooltip.style.display = 'block';
+            backdrop.style.display = 'block';
+          }
+        });
+
         palDiv.addEventListener('mouseenter', (e) => {
-          tooltip.innerHTML = `<h4>${palace.name} (${palace.earthlyBranch}宮)</h4>` + getPalaceInfo(palace);
-          tooltip.style.display = 'block';
-          
-          const xOffset = e.clientX > window.innerWidth / 2 ? -340 : 15;
-          const yOffset = e.clientY > window.innerHeight / 2 ? -tooltip.offsetHeight - 15 : 15;
-          tooltip.style.left = (e.clientX + xOffset) + 'px';
-          tooltip.style.top = (e.clientY + yOffset) + 'px';
+          if (window.innerWidth > 768) {
+            tooltip.innerHTML = `<h4>${palace.name} (${palace.earthlyBranch}宮)</h4>` + getPalaceInfo(palace);
+            tooltip.style.display = 'block';
+            
+            const xOffset = e.clientX > window.innerWidth / 2 ? -340 : 15;
+            const yOffset = e.clientY > window.innerHeight / 2 ? -tooltip.offsetHeight - 15 : 15;
+            tooltip.style.left = (e.clientX + xOffset) + 'px';
+            tooltip.style.top = (e.clientY + yOffset) + 'px';
+          }
         });
         palDiv.addEventListener('mousemove', (e) => {
-          tooltip.style.display = 'block';
-          const xOffset = e.clientX > window.innerWidth / 2 ? -340 : 15;
-          const yOffset = e.clientY > window.innerHeight / 2 ? -tooltip.offsetHeight - 15 : 15;
-          tooltip.style.left = (e.clientX + xOffset) + 'px';
-          tooltip.style.top = (e.clientY + yOffset) + 'px';
+          if (window.innerWidth > 768 && !tooltip.classList.contains('mobile-modal')) {
+            tooltip.style.display = 'block';
+            const xOffset = e.clientX > window.innerWidth / 2 ? -340 : 15;
+            const yOffset = e.clientY > window.innerHeight / 2 ? -tooltip.offsetHeight - 15 : 15;
+            tooltip.style.left = (e.clientX + xOffset) + 'px';
+            tooltip.style.top = (e.clientY + yOffset) + 'px';
+          }
         });
         palDiv.addEventListener('mouseleave', () => {
-          tooltip.style.display = 'none';
+          if (window.innerWidth > 768 && !tooltip.classList.contains('mobile-modal')) {
+            tooltip.style.display = 'none';
+          }
         });
       }
 
