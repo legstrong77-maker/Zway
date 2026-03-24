@@ -258,29 +258,46 @@ document.addEventListener('DOMContentLoaded', () => {
       const palDiv = document.createElement('div');
       palDiv.className = `palace palace-${palace.earthlyBranch}`;
 
-      const starsDiv = document.createElement('div');
-      starsDiv.className = 'stars-container';
+      // 重構 DOM 結構，區分主星、輔星、地支、宮名
+      const majorDiv = document.createElement('div');
+      majorDiv.className = 'stars-major-container';
+      
+      const minorDiv = document.createElement('div');
+      minorDiv.className = 'stars-minor-container';
+
+      // 判斷吉凶星列表 (粗略)
+      const badStars = ['擎羊', '陀羅', '火星', '鈴星', '地空', '地劫'];
 
       palace.majorStars.forEach(star => {
         const span = document.createElement('span');
         span.className = 'star major';
-        // Add Mutagen if present e.g. 紫微化權
-        let text = star.name;
-        if (star.mutagen) text += star.mutagen;
-        span.innerText = text;
-        starsDiv.appendChild(span);
+        span.innerText = star.name;
+        
+        if (star.mutagen) {
+          const mutSpan = document.createElement('span');
+          mutSpan.className = `mutagen mutagen-${star.mutagen}`;
+          mutSpan.innerText = star.mutagen;
+          span.appendChild(mutSpan);
+        }
+        majorDiv.appendChild(span);
       });
 
       palace.minorStars.forEach(star => {
         const span = document.createElement('span');
-        span.className = 'star minor';
-        let text = star.name;
-        if (star.mutagen) text += star.mutagen;
-        span.innerText = text;
-        starsDiv.appendChild(span);
+        span.className = badStars.includes(star.name) ? 'star bad' : 'star minor';
+        span.innerText = star.name;
+        
+        if (star.mutagen) {
+          const mutSpan = document.createElement('span');
+          mutSpan.className = `mutagen mutagen-${star.mutagen}`;
+          mutSpan.innerText = star.mutagen;
+          span.appendChild(mutSpan);
+        }
+        minorDiv.appendChild(span);
       });
       
-      palDiv.appendChild(starsDiv);
+      palDiv.appendChild(majorDiv);
+      palDiv.appendChild(minorDiv);
 
       const branchLabel = document.createElement('div');
       branchLabel.className = 'branch-label';

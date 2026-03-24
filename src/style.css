@@ -131,51 +131,97 @@ button:active {
 .palace {
   background-color: #ffffff;
   min-height: 180px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
+  padding: 8px;
   position: relative;
+  /* 傳統命盤通常會有微微的背景紙紋或純白，此處用純白保持乾淨 */
 }
 
 .palace-name-label {
   position: absolute;
   bottom: 8px;
   right: 8px;
-  background: #ef4444; /* Clean red badge */
+  background: #dc2626; /* 傳統印泥紅 */
   color: #ffffff;
-  padding: 2px 6px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 2px;
+  letter-spacing: 1px;
+  font-family: 'Noto Serif TC', serif;
 }
 
 .branch-label {
   position: absolute;
   bottom: 8px;
-  left: 10px;
-  font-size: 0.9rem;
-  color: var(--text-muted);
+  left: 8px;
+  font-size: 1rem;
+  color: #94a3b8;
   font-family: 'Noto Serif TC', serif;
 }
 
-.stars-container {
+/* 星曜容器排版 */
+.stars-major-container {
   display: flex;
-  flex-direction: column; /* Stack stars vertically like classic charts */
-  flex-wrap: wrap;
-  max-height: 130px;
-  gap: 2px;
-  align-content: flex-start;
-  font-family: 'Noto Serif TC', serif; /* Traditional serif for stars */
+  flex-direction: row-reverse; /* 主星通常從右到左排列（選用）或左到右皆可，此處維持預設置左上 */
+  flex-wrap: nowrap;
+  gap: 8px;
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+
+.stars-minor-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 6px;
+  position: absolute;
+  top: 8px;
+  right: 8px; /* 輔星靠右上排列 */
 }
 
 .star {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-right: 6px;
+  writing-mode: vertical-lr; /* 古典的垂直文字排列 */
+  letter-spacing: 2px;
+  font-family: 'Noto Serif TC', serif;
+  display: flex;
+  align-items: center;
 }
-.star.major { color: var(--star-major); }
-.star.minor { color: var(--star-minor); }
-.star.bad { color: var(--star-bad); }
+
+.star.major {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #b91c1c; /* 主星紅色 */
+}
+
+.star.minor {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #0369a1; /* 吉星藍色 */
+}
+
+.star.bad {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #475569; /* 煞星暗灰色或深紫色均可，這裡用深暗灰 */
+}
+
+/* 四化特效標記 */
+.mutagen {
+  writing-mode: horizontal-tb; /* 四化字轉橫向，當作小角標 */
+  font-size: 0.75rem;
+  padding: 1px 2px;
+  margin-top: 4px;
+  border-radius: 2px;
+  color: #ffffff;
+  line-height: 1;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-weight: 500;
+}
+.mutagen-祿 { background-color: #10b981; }
+.mutagen-權 { background-color: #3b82f6; }
+.mutagen-科 { background-color: #f59e0b; }
+.mutagen-忌 { background-color: #ef4444; }
 
 .center-box {
   grid-area: 2 / 2 / 4 / 4;
@@ -185,31 +231,36 @@ button:active {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
 }
 
 .center-box h2 {
-  font-size: 1.8rem;
-  color: #0f172a;
+  font-size: 2rem;
+  color: #7f1d1d; /* 深邃的古典印泥紅 */
   margin-bottom: 24px;
   font-family: 'Noto Serif TC', serif;
+  letter-spacing: 4px;
+  border-bottom: 1px solid #cbd5e1;
+  padding-bottom: 12px;
 }
 
 .center-info {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
+  text-align: center;
 }
 
 .center-info p {
-  font-size: 1.1rem;
-  color: #334155;
-  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 1.15rem;
+  color: #475569;
+  font-family: 'Noto Serif TC', serif;
+  letter-spacing: 1px;
 }
 
 .center-info span {
-  font-weight: 500;
-  color: #0f172a;
+  font-weight: 700;
+  color: #1e293b;
+  margin-left: 8px;
 }
 
 /* Grid Positioning for 12 Earthly Branches */
