@@ -498,7 +498,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. 本命十二宮位解讀
     analysisContent.innerHTML += `<h3 style="color: #0ea5e9; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top: 30px; margin-bottom: 20px;">📜 本命十二宮詳細分析</h3>`;
-    const orderedPalaces = ['命宮', '兄弟', '夫妻', '子女', '財帛', '疾厄', '遷移', '交友', '官祿', '田宅', '福德', '父母'];
+    const orderedPalaces = ['命宮', '兄弟', '夫妻', '子女', '財帛', '疾厄', '遷移', '僕役', '官祿', '田宅', '福德', '父母'];
     
     orderedPalaces.forEach(pName => {
       const palace = ast.palaces.find(p => p.name === pName);
