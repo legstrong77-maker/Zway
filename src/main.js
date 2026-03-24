@@ -381,10 +381,39 @@ document.addEventListener('DOMContentLoaded', () => {
          backgroundColor: '#ffffff',
          scale: 2 // Higher resolution
       });
-      const link = document.createElement('a');
-      link.download = `命盤_${infoName.innerText}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      const fileName = `命盤_${infoName.innerText}.png`;
+      const dataUrl = canvas.toDataURL('image/png');
+
+      let shared = false;
+      // 嘗試使用能在手機上啟動「儲存影像」的 Web Share API
+      if (navigator.canShare) {
+        try {
+          const res = await fetch(dataUrl);
+          const blob = await res.blob();
+          const file = new File([blob], fileName, { type: 'image/png' });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: '紫微斗數命盤',
+            });
+            shared = true;
+          }
+        } catch (err) {
+          console.log('Share canceled or failed:', err);
+          // 若使用者主動取消，則不執行後續備案
+          if (err.name === 'AbortError') {
+             shared = true;
+          }
+        }
+      }
+
+      // 如果不支援分享或發生非使用者取消的錯誤，退回傳統 <a> 標籤下載
+      if (!shared) {
+        const link = document.createElement('a');
+        link.download = fileName;
+        link.href = dataUrl;
+        link.click();
+      }
     } catch (e) {
       console.error('Canvas error:', e);
       alert('產生圖片失敗！');
