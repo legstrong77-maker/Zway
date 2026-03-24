@@ -1,6 +1,7 @@
 import { astro } from 'iztro';
 import html2canvas from 'html2canvas';
 import './style.css';
+import { analyzePalaceDynamics, minorStarMeanings, dualStarMeanings, starCoreTraits } from './analysisEngine.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('zway-form');
@@ -120,72 +121,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  const starMeanings = {
-    '紫微': '【紫微星】代表尊貴與領導力，具備帝王之氣，個性穩重且有強烈的自尊心與企圖心，是開創事業的將帥之才。',
-    '天機': '【天機星】是智慧與變動的象徵，代表反應靈敏、善於籌謀、喜歡動腦，適應力強，但有時容易思慮過多而猶豫。',
-    '太陽': '【太陽星】代表熱情、博愛、光明磊落，具有無私奉獻的特質，喜歡照顧他人，重視名譽勝於財富，執行力極強。',
-    '武曲': '【武曲星】為將星與財星，代表剛毅果決、行動力強、重視實際收益，個性較為直率耿直，吃苦耐勞。',
-    '天同': '【天同星】為福星，代表溫和、善良、隨遇而安，重視生活情趣與人際和諧，有時稍微缺乏開創的強烈動力，適合平穩發展。',
-    '廉貞': '【廉貞星】代表次桃花與囚星，個性多變、靈活、帶有傲氣，公私分明，對工作有高度的熱忱與責任感。',
-    '天府': '【天府星】是南斗主星，代表財庫與包容力，個性穩重慈悲，有領導統御的能力，善於守成與理財。',
-    '太陰': '【太陰星】代表母性與財富，個性溫柔細膩、重視家庭與感情，具有藝術天賦與直覺力，財富多為累積而來。',
-    '貪狼': '【貪狼星】是第一大桃花星，代表慾望、多才多藝、交際手腕靈活，善於把握機會，但也容易因為慾望而多變。',
-    '巨門': '【巨門星】被稱為暗星，代表口才、是非、深入鑽研的能力，觀察力極其敏銳，適合以口業（律師、老師）或深入的研究謀生。',
-    '天相': '【天相星】代表印星，個性熱心熱誠、重視儀表與體面，具有輔佐的才幹與強烈的正義感，是極佳的輔佐人才。',
-    '天梁': '【天梁星】為蔭星，代表成熟穩重、喜歡照顧晚輩、具有逢凶化吉的特質，帶有長者風範與清高的氣質。',
-    '七殺': '【七殺星】代表權威與變動，個性質接、衝動、充滿開創力，人生大起大落，具備將帥之才，不服輸。',
-    '破軍': '【破軍星】代表破壞與重生，個性不按牌理出牌、喜歡創新求變，具有強大的破壞力與重建執行力，適合開疆闢土。'
-  };
-
   const mutagenMeanings = {
     '祿': '<strong>【化祿】(豐盛/緣分)</strong>：帶來順利、財富與好人緣，使該星曜的正能量最大化，發展機會與福報無窮。',
     '權': '<strong>【化權】(權力/掌控)</strong>：帶來威望、掌控力與行動力，代表實質的決策權與強烈企圖心。',
     '科': '<strong>【化科】(名聲/逢凶化吉)</strong>：帶來名望、貴人與學習能力，能因才華或學識獲得肯定，事情多能平順發展。',
     '忌': '<strong>【化忌】(執著/考驗)</strong>：代表執著、阻礙、變動與考驗，是需要克服的課題，但也可能成為最大的動力。'
-  };
-
-  const dualStarMeanings = {
-    '紫微,天府': '【紫府雙星】強強聯手，氣勢驚人。極具企圖心與理財能力，是一方之霸的格局，但也容易有「一山不容二虎」的內在矛盾，宜培養包容心。',
-    '紫微,七殺': '【紫殺雙星】化殺為權，魄力無雙。具備披荊斬棘的開創力，人生經歷大風大浪後必能成就一番偉業。',
-    '紫微,天相': '【紫相雙星】穩重且具威儀，善於協調與管理，是絕佳的高階主管或幕僚長。',
-    '紫微,破軍': '【紫破雙星】破舊立新，極具叛逆與創新精神。人生起伏較大，適合在新興領域或動盪環境中稱王。',
-    '紫微,貪狼': '【紫貪雙星】桃花與慾望的結合，交際手腕極佳，多才多藝，但在感情或金錢上需懂得節制。',
-    '天機,太陰': '【機月雙星】心思細膩度極高，柔和且具備優異的企劃與分析能力，但也容易多愁善感、思慮過度。',
-    '天機,巨門': '【機巨雙星】口才與邏輯的極致展現。聰明機警，適合需要大量動腦與溝通分析的產業，需注意口舌是非。',
-    '天機,天梁': '【機梁雙星】長者風範加上聰穎機變，擅長運籌帷幄，也是極佳的軍師或顧問型人才，為人較清高。',
-    '太陽,太陰': '【日月雙星】光暗交織，性格兼具熱情與細膩。人生常有戲劇性的轉折，需在動態平衡中尋求內心安定。',
-    '太陽,巨門': '【巨日雙星】光明與口才的結合，極具說服力，適合從事教育、法律、外交或跨國企業，能在異地發光發熱。',
-    '太陽,天梁': '【陽梁雙星】光明與庇蔭的象徵。充滿正義感且熱心助人，適合從事公眾事務、醫療或社會服務。',
-    '武曲,天府': '【武府雙星】財星與庫星同宮，極具理財與賺錢天賦。務實且穩健，擁有強大的資產累積能力。',
-    '武曲,天相': '【武相雙星】剛柔並濟，忠誠且具有執行力，同時兼顧理財與公關協調，是可靠的全方位人才。',
-    '武曲,七殺': '【武殺雙星】剛烈無比，極度果決與行動派。為了目標不擇手段，人生波折多但成就往往十分驚人。',
-    '武曲,破軍': '【武破雙星】破壞力與執行力的結合，動盪與變革的推手。適合從事軍警、工程或高風險高報酬行業。',
-    '武曲,貪狼': '【武貪格局】著名的發家格局，早年多波折，中年後一旦抓住機遇必定暴發，擅長交際與投資。',
-    '天同,巨門': '【同巨雙星】內心時常有矛盾感，既想安逸又容易看到問題。若能發揮巨門的鑽研結合天同的隨和，可成專家。',
-    '天同,天梁': '【同梁雙星】福氣與逢凶化吉的結合。人緣首屈一指，帶有長輩緣，生活平穩，但容易缺乏強烈企圖心。',
-    '天同,太陰': '【同月雙星】極度溫柔、浪漫與細膩。美感極佳，適合從事藝術、設計或美學相關產業，但行動力較弱。',
-    '廉貞,天府': '【廉府雙星】才華洋溢且穩重管理，公關手腕高明，能穩健地拓展人脈與版圖，適合大型企業或機關。',
-    '廉貞,天相': '【廉相雙星】高度的責任感與公關魅力。長袖善舞，極具政治手腕，能在複雜的人際網中游刃有餘。',
-    '廉貞,七殺': '【廉殺雙星】帶有極強的傲氣與衝勁。行事風格強烈，能承擔極大壓力，但也容易與人發生衝突。',
-    '廉貞,破軍': '【廉破雙星】高度多變與不穩定。創造力極強但破壞力也大，人生多起伏，需在顛覆中尋找自我價值。',
-    '廉貞,貪狼': '【廉貪雙星】兩大桃花星同宮，魅力四射。交際能力堪稱紫微之冠，才藝多且慾望強，需妥善管理男女關係。'
-  };
-
-  const minorStarMeanings = {
-    '文昌': '<strong>【吉星】</strong>代表正統文歷與考試運。增強邏輯思考、文書處理與學習能力，使該宮位表現更為文雅理智。',
-    '文曲': '<strong>【吉星】</strong>代表才藝與口才。增強藝術天分、溝通表達與直覺，使該宮位表現更為靈活多變。',
-    '左輔': '<strong>【吉星】</strong>代表平輩貴人與正向助力。能增加該宮位的穩定度與資源，做事踏實，易得他人支持。',
-    '右弼': '<strong>【吉星】</strong>代表非主流或異性平輩貴人。增強桃花人緣與靈活性，帶來意想不到的助力與圓融。',
-    '天魁': '<strong>【吉星】</strong>代表陽性或長輩貴人。容易在危難時得到直接的實質幫助，為該宮位帶來逢凶化吉之效。',
-    '天鉞': '<strong>【吉星】</strong>代表陰性或異性長輩貴人。貴人助力常是暗中相助，同時也會增強該宮位的異性緣。',
-    '祿存': '<strong>【吉星】</strong>代表實質財富與穩固。能顯著增加該宮位的資源與安定感，具有強大的解厄功能，但也帶有保守特質。',
-    '天馬': '<strong>【吉星】</strong>代表動能與變遷。會加速並擴大該宮位的狀況，帶來奔波、向外發展與強大活動力。',
-    '擎羊': '<strong>【煞星】</strong>具有強大破壞力與衝勁的「明箭」。雖會帶來波折與傷害，但也賦予極強的開創力與無畏的執行力。',
-    '陀羅': '<strong>【煞星】</strong>代表反覆拖延與鑽牛角尖的「暗箭」。導致這方面的發展猶豫原地打轉，但也賦予極強的韌性。',
-    '火星': '<strong>【煞星】</strong>代表突發性的脾氣與激烈波折。容易在此宮位展現急躁衝動，但突發的爆發力與行動力驚人。',
-    '鈴星': '<strong>【煞星】</strong>代表內隱的、持續性的精神煎熬。會帶來暗中的波折與算計，但也賦予驚人的意志力與深沉心機。',
-    '地空': '<strong>【煞星】</strong>代表精神上的超脫與空虛。常有破財、虛幻或半途而廢的現象，但極具宗教天分與天馬行空的創意。',
-    '地劫': '<strong>【煞星】</strong>代表物質上的劫奪與破耗。容易在財務或實質面上遭受無預警的挫折，需學習拿得起放得下。'
   };
 
   function getPalaceInfo(palace) {
@@ -202,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (star.mutagen) {
           text += `<span style="color: #b91c1c;"> (${star.mutagen})</span>`;
         }
-        html += `<p style="margin-bottom: 6px;">${text} - ${starMeanings[star.name] || '此星曜影響該宮位走向。'}</p>`;
+        html += `<p style="margin-bottom: 6px;">${text} - ${starCoreTraits[star.name] || '影響該宮走向'}。</p>`;
         if (star.mutagen && mutagenMeanings[star.mutagen]) {
            html += `<p style="margin-bottom: 12px; font-size: 0.9em; color:#b91c1c;">${mutagenMeanings[star.mutagen]}</p>`;
         }
@@ -210,8 +150,8 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // 判斷雙主星格局
       if (majors.length === 2) {
-        const k1 = majors[0].name + ',' + majors[1].name;
-        const k2 = majors[1].name + ',' + majors[0].name;
+        const k1 = majors[0].name + majors[1].name;
+        const k2 = majors[1].name + majors[0].name;
         const comboMeaning = dualStarMeanings[k1] || dualStarMeanings[k2];
         if (comboMeaning) {
           html += `<p style="margin-bottom: 12px; padding: 6px; background: #fdf2f8; border-left: 3px solid #db2777; color: #9d174d; font-size: 0.95em;"><strong>【雙星格局】</strong>${comboMeaning}</p>`;
@@ -471,76 +411,21 @@ document.addEventListener('DOMContentLoaded', () => {
       const minorStars = palaceDetails.minorStars;
       
       let evidenceArr = [];
-      let interpretationHtml = '';
-
-      // Major Stars Interpretation
+      
       if (majorStars.length > 0) {
-        majorStars.forEach(star => {
-          let text = star.name;
-          if (star.mutagen) text += star.mutagen;
-          evidenceArr.push('主星：' + text);
-          
-          interpretationHtml += `<p style="margin-bottom: 12px;"><strong>【${star.name}】</strong>${starMeanings[star.name] || '此星曜影響該宮位走向。'}</p>`;
-          if (star.mutagen && mutagenMeanings[star.mutagen]) {
-             interpretationHtml += `<p style="margin-bottom: 12px; color: #b91c1c; padding-left: 14px; border-left: 3px solid #fca5a5;">${star.name}發生轉化，${mutagenMeanings[star.mutagen]}</p>`;
-          }
-        });
-
-        // 判斷雙主星格局
-        if (majorStars.length === 2) {
-          const k1 = majorStars[0].name + ',' + majorStars[1].name;
-          const k2 = majorStars[1].name + ',' + majorStars[0].name;
-          const comboMeaning = dualStarMeanings[k1] || dualStarMeanings[k2];
-          if (comboMeaning) {
-            interpretationHtml += `
-              <div style="background: #fdf2f8; border-left: 4px solid #db2777; padding: 12px; margin-top: 14px; margin-bottom: 14px; border-radius: 0 4px 4px 0;">
-                <p style="color: #9d174d; margin: 0;"><strong>【雙星共振效應】</strong>${comboMeaning}</p>
-              </div>`;
-          }
-        }
-
+        majorStars.forEach(s => evidenceArr.push(s.name + (s.mutagen || '')));
       } else {
         evidenceArr.push('空宮 (無主星)');
-        interpretationHtml += `<p style="margin-bottom: 12px; color: #64748b;">此宮位為<strong>空宮</strong>，代表在此領域中您的可塑性大，容易受外界環境或他人影響，變化多端。建議參考對宮的主星來做綜合判斷。</p>`;
       }
 
-      // Minor stars interpretation (吉凶星與四化)
-      let minorHtmls = [];
-      minorStars.forEach(star => {
-        let text = star.name;
-        let isImportant = false;
-        let minorText = '';
-        
-        if (minorStarMeanings[star.name]) {
-          isImportant = true;
-          minorText += `<p style="margin-bottom: 6px; font-size: 0.95em;">${minorStarMeanings[star.name]}</p>`;
-          evidenceArr.push(text);
-        }
-
-        if (star.mutagen) {
-          isImportant = true;
-          text += star.mutagen;
-          minorText += `<p style="margin-bottom: 6px; font-size: 0.95em; color: #b91c1c;">輔星${star.name}發生轉化，${mutagenMeanings[star.mutagen]}</p>`;
-          if (!evidenceArr.includes(star.name)) {
-            evidenceArr.push(text);
-          } else {
-            evidenceArr[evidenceArr.length - 1] = text;
-          }
-        }
-
-        if (isImportant) {
-          minorHtmls.push(minorText);
+      minorStars.forEach(s => {
+        if (minorStarMeanings[s.name] || s.mutagen) {
+           evidenceArr.push(s.name + (s.mutagen || ''));
         }
       });
 
-      if (minorHtmls.length > 0) {
-        interpretationHtml += `
-          <div style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed #cbd5e1;">
-            <p style="margin-bottom: 8px; color: #475569; font-weight: bold;">✦ 輔助星曜影響：</p>
-            ${minorHtmls.join('')}
-          </div>
-        `;
-      }
+      // 使用 analysisEngine 產生高度情境化的解讀
+      const interpretationHtml = analyzePalaceDynamics(palaceName, majorStars, minorStars);
 
       const blockHtml = `
         <div class="analysis-block" ${isSpecial ? 'style="border-left-color: #ef4444; background: #fff1f2;"' : ''}>
