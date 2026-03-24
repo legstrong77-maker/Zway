@@ -401,31 +401,43 @@ document.addEventListener('DOMContentLoaded', () => {
       const fileName = `命盤_${infoName.innerText}.png`;
       const dataUrl = canvas.toDataURL('image/png');
 
-      let shared = false;
-      // 嘗試使用能在手機上啟動「儲存影像」的 Web Share API
-      if (navigator.canShare) {
-        try {
-          const res = await fetch(dataUrl);
-          const blob = await res.blob();
-          const file = new File([blob], fileName, { type: 'image/png' });
-          if (navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              files: [file],
-              title: '紫微斗數命盤',
-            });
-            shared = true;
-          }
-        } catch (err) {
-          console.log('Share canceled or failed:', err);
-          // 若使用者主動取消，則不執行後續備案
-          if (err.name === 'AbortError') {
-             shared = true;
-          }
+      // 針對手機端，顯示圖片讓使用者長按儲存 (100% 成功存入相簿的做法)
+      if (window.innerWidth <= 768) {
+        let backdrop = document.getElementById('tooltip-backdrop');
+        if (!backdrop) {
+          backdrop = document.createElement('div');
+          backdrop.id = 'tooltip-backdrop';
+          backdrop.className = 'tooltip-backdrop';
+          document.body.appendChild(backdrop);
         }
-      }
+        backdrop.style.display = 'block';
 
-      // 如果不支援分享或發生非使用者取消的錯誤，退回傳統 <a> 標籤下載
-      if (!shared) {
+        const modal = document.createElement('div');
+        modal.className = 'palace-tooltip mobile-modal';
+        modal.style.display = 'flex';
+        modal.style.flexDirection = 'column';
+        modal.style.alignItems = 'center';
+        modal.style.padding = '20px';
+        modal.style.width = '90vw';
+        modal.style.maxWidth = '400px';
+
+        modal.innerHTML = `
+          <button class="close-tooltip-btn" style="display:flex; top: -10px; right: -10px; z-index: 10;">✕</button>
+          <h3 style="margin-bottom: 12px; color: #0f172a; text-align: center; font-size: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">長按下方圖片以儲存至相簿</h3>
+          <img src="${dataUrl}" style="max-width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+        `;
+
+        document.body.appendChild(modal);
+
+        const closeFunc = () => {
+          modal.remove();
+          backdrop.style.display = 'none';
+        };
+
+        modal.querySelector('.close-tooltip-btn').addEventListener('click', closeFunc);
+        backdrop.onclick = closeFunc;
+      } else {
+        // 電腦端直接下載
         const link = document.createElement('a');
         link.download = fileName;
         link.href = dataUrl;

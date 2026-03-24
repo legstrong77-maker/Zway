@@ -181,10 +181,13 @@ button:active {
 }
 
 .star {
-  writing-mode: vertical-lr; /* 古典的垂直文字排列 */
-  letter-spacing: 2px;
+  width: 1.4em; /* 用寬度限制達成直書效果，相容 html2canvas */
+  line-height: 1.1;
+  word-break: break-all;
+  text-align: center;
   font-family: 'Noto Serif TC', serif;
   display: flex;
+  flex-direction: column;
   align-items: center;
 }
 
@@ -208,7 +211,6 @@ button:active {
 
 /* 四化特效標記 */
 .mutagen {
-  writing-mode: horizontal-tb; /* 四化字轉橫向，當作小角標 */
   font-size: 0.75rem;
   padding: 1px 2px;
   margin-top: 4px;
