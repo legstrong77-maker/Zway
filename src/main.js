@@ -24,6 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const daySelect = document.getElementById('birth-day');
   const timeSelect = document.getElementById('birthtime');
   const nameInput = document.getElementById('name');
+  const flowDateInput = document.getElementById('flow-date');
+  const btnUpdateFlow = document.getElementById('btn-update-flow');
+  
+  let currentAst = null;
 
   const timeMap = ['子時', '丑時', '寅時', '卯時', '辰時', '巳時', '午時', '未時', '申時', '酉時', '戌時', '亥時'];
 
@@ -92,7 +96,11 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const ast = astro.bySolar(birthday, timeIndex, '男', true, 'zh-TW');
 
-      renderChart(ast, name, birthday, birthtimeStr);
+      currentAst = ast;
+      const today = new Date().toISOString().split('T')[0];
+      if(!flowDateInput.value) flowDateInput.value = today;
+      
+      renderChart(ast, name, birthday, birthtimeStr, ast.horoscope(flowDateInput.value));
       currentShareText = generateAnalysis(ast, name, birthday, birthtimeStr);
       chartContainer.style.display = 'block';
 
@@ -184,9 +192,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return html;
   }
 
-  function renderChart(ast, name, birthday, birthtimeStr) {
+  function renderChart(ast, name, birthday, birthtimeStr, horoscopeData) {
     const oldPalaces = chartGrid.querySelectorAll('.palace');
     oldPalaces.forEach(p => p.remove());
+
+    const svgContainer = document.getElementById('hover-lines-svg');
+    if(svgContainer) svgContainer.innerHTML = '';
 
     infoName.innerText = name;
     displayName.innerText = name + ' 的命盤';
@@ -239,15 +250,65 @@ document.addEventListener('DOMContentLoaded', () => {
       palDiv.appendChild(majorDiv);
       palDiv.appendChild(minorDiv);
 
-      const branchLabel = document.createElement('div');
-      branchLabel.className = 'branch-label';
-      branchLabel.innerText = palace.earthlyBranch;
-      palDiv.appendChild(branchLabel);
+      const branches = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+      const myBranchIndex = branches.indexOf(palace.earthlyBranch);
+      const oppBranchIndex = (myBranchIndex + 6) % 12;
+      const oppBranch = branches[oppBranchIndex];
 
-      const nameLabel = document.createElement('div');
-      nameLabel.className = 'palace-name-label';
-      nameLabel.innerText = palace.name;
-      palDiv.appendChild(nameLabel);
+      const blCorner = document.createElement('div');
+      blCorner.className = 'palace-corner-bl';
+      blCorner.innerHTML = `
+        <div class="god-label" style="color:#2563eb;">${palace.changsheng12}</div>
+        <div class="god-label">${palace.boshi12}</div>
+        <div class="god-label">${palace.jiangqian12}</div>
+        <div class="god-label">${palace.suiqian12}</div>
+      `;
+      palDiv.appendChild(blCorner);
+
+      const brCorner = document.createElement('div');
+      brCorner.className = 'palace-corner-br';
+      
+      // Flow tags container inside brCorner
+      let flowTagsHtml = '';
+      if (horoscopeData) {
+        if(horoscopeData.yearly.earthlyBranch === palace.earthlyBranch) flowTagsHtml += '<span class="flow-tag yearly">流年</span>';
+        if(horoscopeData.monthly.earthlyBranch === palace.earthlyBranch) flowTagsHtml += '<span class="flow-tag monthly">流月</span>';
+        if(horoscopeData.daily.earthlyBranch === palace.earthlyBranch) flowTagsHtml += '<span class="flow-tag daily">流日</span>';
+        if(horoscopeData.hourly.earthlyBranch === palace.earthlyBranch) flowTagsHtml += '<span class="flow-tag hourly">流時</span>';
+      }
+
+      brCorner.innerHTML = `
+        ${flowTagsHtml ? `<div class="flow-tags-container">${flowTagsHtml}</div>` : ''}
+        <div class="small-limits">${palace.ages.join(' ')}</div>
+        <div class="decade-range">${palace.decadal.range[0]} - ${palace.decadal.range[1]}</div>
+        <div class="palace-name-label">${palace.name}</div>
+        <div class="stem-branch-label">${palace.heavenlyStem}${palace.earthlyBranch}</div>
+      `;
+      palDiv.appendChild(brCorner);
+
+      if(horoscopeData) {
+        const pIndex = palace.index;
+        const addFlowStars = (list) => {
+          if(!list) return;
+          list.forEach(s => {
+             const span = document.createElement('span');
+             span.className = 'star minor';
+             span.style.color = '#8b5cf6'; // purple for flow stars
+             span.innerText = s.name;
+             if(s.mutagen) {
+               const mutSpan = document.createElement('span');
+               mutSpan.className = `mutagen mutagen-${s.mutagen}`;
+               mutSpan.innerText = s.mutagen;
+               span.appendChild(mutSpan);
+             }
+             minorDiv.appendChild(span);
+          });
+        };
+        addFlowStars(horoscopeData.yearly.stars[pIndex]);
+        addFlowStars(horoscopeData.monthly.stars[pIndex]);
+        addFlowStars(horoscopeData.daily.stars[pIndex]);
+        addFlowStars(horoscopeData.hourly.stars[pIndex]);
+      }
 
       // Tooltip Hover Logic
       const tooltip = document.getElementById('palace-tooltip');
@@ -289,6 +350,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const yOffset = e.clientY > window.innerHeight / 2 ? -tooltip.offsetHeight - 15 : 15;
             tooltip.style.left = (e.clientX + xOffset) + 'px';
             tooltip.style.top = (e.clientY + yOffset) + 'px';
+
+            // Draw opposing line
+            const oppDiv = chartGrid.querySelector(`.palace-${oppBranch}`);
+            if (oppDiv && svgContainer) {
+              const rect1 = palDiv.getBoundingClientRect();
+              const rect2 = oppDiv.getBoundingClientRect();
+              const svgRect = svgContainer.getBoundingClientRect();
+              const x1 = rect1.left + rect1.width/2 - svgRect.left;
+              const y1 = rect1.top + rect1.height/2 - svgRect.top;
+              const x2 = rect2.left + rect2.width/2 - svgRect.left;
+              const y2 = rect2.top + rect2.height/2 - svgRect.top;
+              svgContainer.innerHTML = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,5" opacity="0.6" pointer-events="none"></line>`;
+            }
           }
         });
         palDiv.addEventListener('mousemove', (e) => {
@@ -304,6 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (window.innerWidth > 768 && !tooltip.classList.contains('mobile-modal')) {
             tooltip.style.display = 'none';
           }
+          if (svgContainer) svgContainer.innerHTML = '';
         });
       }
 
@@ -393,8 +468,21 @@ document.addEventListener('DOMContentLoaded', () => {
   btnLineShare.addEventListener('click', () => {
     if (!currentShareText) return;
     const encoded = encodeURIComponent(currentShareText);
-    // Use the official LINE share endpoint which handles web fallbacks better
     window.open(`https://line.me/R/share?text=${encoded}`, '_blank');
+  });
+
+  btnUpdateFlow.addEventListener('click', () => {
+    if (!currentAst) return;
+    let selectedDate = flowDateInput.value;
+    if (!selectedDate) selectedDate = new Date().toISOString().split('T')[0];
+    const n = nameInput.value;
+    const y = yearSelect.value;
+    const m = monthSelect.value;
+    const d = daySelect.value;
+    const birthday = `${y}-${m}-${d}`;
+    const timeIndex = parseInt(timeSelect.value, 10);
+    const birthtimeStr = timeMap[timeIndex];
+    renderChart(currentAst, n, birthday, birthtimeStr, currentAst.horoscope(selectedDate));
   });
 
   function generateAnalysis(ast, name, birthday, birthtime) {

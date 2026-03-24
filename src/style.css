@@ -136,28 +136,88 @@ button:active {
   /* 傳統命盤通常會有微微的背景紙紋或純白，此處用純白保持乾淨 */
 }
 
-.palace-name-label {
+.palace-corner-br {
   position: absolute;
   bottom: 8px;
   right: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.palace-corner-bl {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+}
+
+.palace-name-label {
   background: #dc2626; /* 傳統印泥紅 */
   color: #ffffff;
-  padding: 4px 6px;
+  padding: 2px 4px;
   font-size: 0.9rem;
   font-weight: 700;
   border-radius: 2px;
   letter-spacing: 1px;
   font-family: 'Noto Serif TC', serif;
+  line-height: 1.2;
 }
 
-.branch-label {
-  position: absolute;
-  bottom: 8px;
-  left: 8px;
-  font-size: 1rem;
-  color: #94a3b8;
+.stem-branch-label {
+  font-size: 0.9rem;
+  color: #15803d; /* Dark green */
   font-family: 'Noto Serif TC', serif;
+  font-weight: 700;
 }
+
+.decade-range {
+  font-size: 0.85rem;
+  color: #334155;
+  font-weight: 700;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+
+.small-limits {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  max-width: 60px;
+  text-align: right;
+  line-height: 1.2;
+  word-wrap: break-word;
+}
+
+.god-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+.flow-tags-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.flow-tag {
+  background-color: #8b5cf6;
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1;
+  font-weight: 500;
+  display: inline-block;
+}
+.flow-tag.yearly { background-color: #6366f1; }
+.flow-tag.monthly { background-color: #ec4899; }
+.flow-tag.daily { background-color: #f59e0b; }
+.flow-tag.hourly { background-color: #10b981; }
 
 /* 星曜容器排版 */
 .stars-major-container {
@@ -428,17 +488,39 @@ button:active {
     padding: 0 1px;
     margin-top: 2px;
   }
+  .palace-corner-br {
+    bottom: 4px;
+    right: 4px;
+    gap: 2px;
+  }
+  .palace-corner-bl {
+    bottom: 4px;
+    left: 4px;
+  }
   .palace-name-label {
     font-size: 0.75rem;
     padding: 2px 4px;
-    bottom: 4px; 
-    right: 4px;
     letter-spacing: 0;
   }
-  .branch-label {
+  .stem-branch-label {
     font-size: 0.8rem;
-    bottom: 4px; 
-    left: 4px;
+  }
+  .decade-range {
+    font-size: 0.7rem;
+  }
+  .small-limits {
+    font-size: 0.6rem;
+    max-width: 45px;
+  }
+  .god-label {
+    font-size: 0.65rem;
+  }
+  .flow-tags-container {
+    margin-top: 4px;
+  }
+  .flow-tag {
+    font-size: 0.6rem;
+    padding: 1px 2px;
   }
   .center-box {
     padding: 8px;
