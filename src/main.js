@@ -262,9 +262,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     infoName.innerText = name;
     displayName.innerText = name + ' 的命盤';
-    infoSolar.innerText = birthday + ' ' + birthtimeStr;
-    infoLunar.innerText = ast.lunarDate;
     infoElement.innerText = ast.fiveElementsClass;
+    
+    let age = '-';
+    if (horoscopeData && horoscopeData.age && horoscopeData.age.nominalAge) {
+      age = horoscopeData.age.nominalAge;
+    } else {
+      const birthY = parseInt(birthday.split('-')[0], 10);
+      const currentY = flowDateInput && flowDateInput.value ? parseInt(flowDateInput.value.split('-')[0], 10) : new Date().getFullYear();
+      age = currentY - birthY + 1;
+    }
+    document.getElementById('info-age').innerText = age;
+    
+    document.getElementById('info-bazi').innerText = ast.chineseDate || '-';
+    document.getElementById('info-solar').innerText = ast.solarDate || birthday;
+    document.getElementById('info-lunar').innerText = ast.lunarDate || '-';
+    document.getElementById('info-time').innerText = ast.time ? `${ast.time}(${ast.timeRange})` : birthtimeStr;
+    document.getElementById('info-zodiac').innerText = ast.zodiac || '-';
+    document.getElementById('info-sign').innerText = ast.sign || '-';
+    document.getElementById('info-soul').innerText = ast.soul || '-';
+    document.getElementById('info-body').innerText = ast.body || '-';
+    document.getElementById('info-soul-palace').innerText = ast.earthlyBranchOfSoulPalace || '-';
+    document.getElementById('info-body-palace').innerText = ast.earthlyBranchOfBodyPalace || '-';
+
+    const genderIcon = document.getElementById('info-gender-icon');
+    if (genderIcon) {
+      genderIcon.innerText = ast.gender === '男' ? '♂' : '♀';
+      genderIcon.style.color = ast.gender === '男' ? '#3b82f6' : '#ec4899';
+    }
 
     ast.palaces.forEach(palace => {
       const palDiv = document.createElement('div');
