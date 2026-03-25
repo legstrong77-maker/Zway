@@ -2,6 +2,7 @@ import { astro } from 'iztro';
 import html2canvas from 'html2canvas';
 import './style.css';
 import { analyzePalaceDynamics, minorStarMeanings, dualStarMeanings, starCoreTraits } from './analysisEngine.js';
+import { shenshaMeanings, mutagenPalaceMeanings } from './dataDictionary.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('zway-form');
@@ -136,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     '忌': '<strong>【化忌】(執著/考驗)</strong>：代表執著、阻礙、變動與考驗，是需要克服的課題，但也可能成為最大的動力。'
   };
 
-  function getPalaceInfo(palace) {
+  function getPalaceInfo(palace, horoscopeData) {
     let html = '';
     const majors = palace.majorStars || [];
     const minors = palace.minorStars || [];
@@ -151,8 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
           text += `<span style="color: #b91c1c;"> (${star.mutagen})</span>`;
         }
         html += `<p style="margin-bottom: 6px;">${text} - ${starCoreTraits[star.name] || '影響該宮走向'}。</p>`;
-        if (star.mutagen && mutagenMeanings[star.mutagen]) {
-           html += `<p style="margin-bottom: 12px; font-size: 0.9em; color:#b91c1c;">${mutagenMeanings[star.mutagen]}</p>`;
+        if (star.mutagen) {
+           const specificMeaning = mutagenPalaceMeanings[star.mutagen]?.[palace.name] || mutagenMeanings[star.mutagen];
+           html += `<p style="margin-bottom: 12px; font-size: 0.9em; color:#b91c1c;">${specificMeaning}</p>`;
         }
       });
       
@@ -183,11 +185,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (isImportantMinor) {
         html += `<p style="margin-bottom: 6px; font-size: 0.95em;">${text} - ${meaning || ''}</p>`;
-        if (star.mutagen && mutagenMeanings[star.mutagen]) {
-           html += `<p style="margin-bottom: 8px; font-size: 0.85em; color:#b91c1c; padding-left: 10px;">> ${mutagenMeanings[star.mutagen]}</p>`;
+        if (star.mutagen) {
+           const specificMeaning = mutagenPalaceMeanings[star.mutagen]?.[palace.name] || mutagenMeanings[star.mutagen];
+           html += `<p style="margin-bottom: 8px; font-size: 0.85em; color:#b91c1c; padding-left: 10px;">> ${specificMeaning}</p>`;
         }
       }
     });
+
+    // 處理流運影響 (Flow Periods)
+    if (horoscopeData) {
+       const pIndex = palace.index;
+       let flowText = '';
+       if (horoscopeData.yearly.earthlyBranch === palace.earthlyBranch) {
+           flowText += `<p style="margin-bottom: 6px;"><strong>流年焦點</strong>：本年度運勢核心發生於此，行事請特別參考此宮星曜組合。</p>`;
+       }
+       if (horoscopeData.monthly.earthlyBranch === palace.earthlyBranch) {
+           flowText += `<p style="margin-bottom: 6px;"><strong>流月焦點</strong>：本月心態與境遇聚焦於此宮領域。</p>`;
+       }
+       
+       const flowStars = [
+         ...(horoscopeData.yearly.stars[pIndex] || []).map(s => `流年${s.name}${s.mutagen ? '('+s.mutagen+')' : ''}`),
+         ...(horoscopeData.monthly.stars[pIndex] || []).map(s => `流月${s.name}${s.mutagen ? '('+s.mutagen+')' : ''}`)
+       ];
+       
+       if (flowStars.length > 0 || flowText) {
+          html += `<div style="margin-top: 12px; padding: 8px; background: #f3e8ff; border-left: 3px solid #9333ea; font-size: 0.9em; color: #4c1d95;">`;
+          html += `<h5 style="margin-bottom: 6px; color: #7e22ce;">📅 流運影響及建議</h5>`;
+          html += flowText;
+          if (flowStars.length > 0) {
+            html += `<p style="margin-bottom: 4px;">本期流運駐入：${flowStars.join('、')}</p>`;
+            html += `<p style="line-height: 1.4;"><strong>💡 建議：</strong>當流星帶有化祿化權時，代表該領域有機會與動能，可積極把握；若帶化忌或凶煞星(如羊陀火鈴)，則暗示阻力與考驗，凡事求穩、低調防範，不宜因一時衝動而做重大決策。</p>`;
+          }
+          html += `</div>`;
+       }
+    }
+
+    // 處理十二神煞註解
+    html += `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85em; color: #64748b; line-height: 1.5;">`;
+    html += `<p style="margin-bottom: 4px; color: #475569;"><strong>✨ 將前/歲前/博士/長生諸神煞：</strong></p>`;
+    // 使用 Set 避免重複的神煞出現 (如同名的小耗等)
+    const shenshaSet = new Set([palace.changsheng12, palace.boshi12, palace.jiangqian12, palace.suiqian12].filter(Boolean));
+    shenshaSet.forEach(ss => {
+       if (shenshaMeanings[ss]) {
+          html += `<p style="margin-bottom: 2px;">• <b>${ss}</b>：${shenshaMeanings[ss]}</p>`;
+       }
+    });
+    html += `</div>`;
 
     return html;
   }
@@ -329,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (tooltip) {
         palDiv.addEventListener('click', (e) => {
           if (window.innerWidth <= 768) {
-            tooltip.innerHTML = `<button id="close-tooltip-btn" class="close-tooltip-btn">✕</button><h4>${palace.name} (${palace.earthlyBranch}宮)</h4>` + getPalaceInfo(palace);
+            tooltip.innerHTML = `<button id="close-tooltip-btn" class="close-tooltip-btn">✕</button><h4>${palace.name} (${palace.earthlyBranch}宮)</h4>` + getPalaceInfo(palace, horoscopeData);
             tooltip.querySelector('#close-tooltip-btn').addEventListener('click', () => {
               tooltip.style.display = 'none';
               backdrop.style.display = 'none';
@@ -343,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         palDiv.addEventListener('mouseenter', (e) => {
           if (window.innerWidth > 768) {
-            tooltip.innerHTML = `<h4>${palace.name} (${palace.earthlyBranch}宮)</h4>` + getPalaceInfo(palace);
+            tooltip.innerHTML = `<h4>${palace.name} (${palace.earthlyBranch}宮)</h4>` + getPalaceInfo(palace, horoscopeData);
             tooltip.style.display = 'block';
             
             const xOffset = e.clientX > window.innerWidth / 2 ? -340 : 15;
